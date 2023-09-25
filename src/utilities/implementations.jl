@@ -1,4 +1,4 @@
-export ModelImplementation, bms_j, lc_j, lm_j, bms_r, lc_r, lm_r, bms, lc, lm
+export ModelImplementation, bms_j, lc_j, lm_j, bms_r, lc_r, lm_r, bms, lc, lm, hmc
 struct ModelImplementation
     adjustment::AdjustmentChoice
     jumpoff::JumpoffChoice
