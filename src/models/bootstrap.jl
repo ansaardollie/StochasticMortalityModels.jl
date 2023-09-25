@@ -1,9 +1,5 @@
 
-include("./../requirements.jl")
-include("./../hmd/hmd.jl")
-include("./../utilities/utilities.jl")
-include("./models.jl")
-
+export bootstrap
 using ThreadsX
 # function deviance_residual(obs, fit)
 #     if obs == 0 || fit == 0
