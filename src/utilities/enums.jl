@@ -33,6 +33,7 @@ end
     AC_DT = 2
     AC_E0 = 3
     AC_DXT = 4
+    AC_HMC = 5
 end
 
 @enum JumpoffChoice begin

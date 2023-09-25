@@ -9,6 +9,7 @@ end
 const bms = ModelImplementation(AC_DXT, JR_FITTED, CC_JULIA)
 const lc = ModelImplementation(AC_DT, JR_FITTED, CC_JULIA)
 const lm = ModelImplementation(AC_E0, JR_ACTUAL, CC_JULIA)
+const hmc = ModelImplementation(AC_HMC, JR_FITTED, CC_JULIA)
 
 
 const bms_j = ModelImplementation(AC_DXT, JR_FITTED, CC_JULIA)

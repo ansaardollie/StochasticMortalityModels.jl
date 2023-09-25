@@ -78,23 +78,28 @@ function fitted_deaths(model::MortalityModel, version::ParameterVersion=PV_ADJUS
 end
 
 function basefit!(model::MortalityModel; constrain::Bool=true)
+    ac = adjustment(model)
+    ishmc = ac == AC_HMC
     ar = Ages(model)
     yr = Years(model)
     lr = logrates(model)
-    α = mapslices(lmt -> mean(lmt[.!isinf.(lmt)]), lr, dims=2)
+    α = ishmc ? lr[:, 1] : mapslices(lmt -> mean(lmt[.!isinf.(lmt)]), lr, dims=2)
     alpha = ParameterSet("α(x)", vec(α), ar)
-    Zxt = lr .- α
+    Zxt = (ishmc ? lr[:, 2:end] : lr) .- α
 
     Zxt_svd = svd(Zxt)
     β = Zxt_svd.U[:, 1]
     beta = ParameterSet("β(x)", vec(β), ar)
 
     κ = Zxt_svd.V[:, 1] * Zxt_svd.S[1]
+    if ishmc
+        κ = [0, κ]
+    end
     kappa = ParameterSet("κ(t)", vec(κ), yr)
 
     mp = ModelParameters(alpha, beta, kappa)
     ump = ModelParameters(alpha, beta, kappa)
-    if constrain
+    if constrain && !ishmc
         constrain!(mp; mode=calculation(model))
         constrain!(ump; mode=calculation(model))
     end
@@ -126,6 +131,18 @@ function basefit!(logrates::Matrix{Float64}; constrain::Bool=true, cmode::Calcul
     end
 
     return (alphas=α, betas=β, kappas=κ)
+end
+
+function hmc_basefit!(logrates::Matrix{Float64})
+    α = logrates[:, 1]
+    eff_logrates = logrates[:, 2:end]
+    Zxt = eff_logrates .- α
+    (U, S, V) = svd(Zxt)
+    β = vec(U[:, 1])
+    κ = vec(V[:, 1] * S[1])
+
+    return (alphas=α, betas=β, kappas=[0, κ...])
+
 end
 
 function deviance(obs, fit)
@@ -533,6 +550,7 @@ function fit!(model::MortalityModel; constrain::Bool=true, choose_period::Bool=f
     if choose_period
         choose_period!(model)
     end
+
 
     basefit!(model, constrain=constrain)
     cm = calculation(model)
