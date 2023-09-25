@@ -8,7 +8,7 @@ export MortalityDataCategory, MDC_EXPOSURES, MDC_DEATHS, MDC_APPROXIMATE_DEATHS,
 export sexmatch, mdc_convert, mdc_label, mdc_shortlabel
 export a0_config
 export UncertaintyMode, UM_INNOVATION_ONLY, UM_INNOVDRIFT
-export AdjustmentChoice, AC_NONE, AC_DT, AC_E0, AC_DXT
+export AdjustmentChoice, AC_NONE, AC_DT, AC_E0, AC_DXT, AC_HMC
 export JumpoffChoice, JR_FITTED, JR_ACTUAL
 export ForecastVariable, FV_RATE, FV_LOGRATE, FV_MRL, FV_DEATHS, FV_LEAB
 export DataStrata, DS_COMPLETE, DS_TRAIN, DS_TEST, stratamatch
