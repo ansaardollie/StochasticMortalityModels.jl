@@ -93,7 +93,7 @@ function basefit!(model::MortalityModel; constrain::Bool=true)
 
     κ = Zxt_svd.V[:, 1] * Zxt_svd.S[1]
     if ishmc
-        κ = [0, κ]
+        κ = Float64[0.0, κ...]
     end
     kappa = ParameterSet("κ(t)", vec(κ), yr)
 
