@@ -1,4 +1,20 @@
-export subset
+export subset, combine_age_groups
+
+
+
+function combine_age_groups(df::DataFrame, start_ages::Vector{Int64})
+
+    grouped_df = @chain df begin
+        @transform(:AgeIntervalStart = start_ages[map(a -> findlast(x -> a >= x, start_ages), :Age)])
+        groupby([:Year, :AgeIntervalStart])
+        @combine(:Deaths = sum(:Deaths), :Exposures = sum(:Exposures), :Lifespans = :Lifespans[1])
+        @transform(:Rates = :Deaths ./ :Exposures)
+        @transform(:LogRates = log.(:Rates))
+    end
+
+    rename!(grouped_df, :AgeIntervalStart => :Age)
+    return grouped_df
+end
 
 function subset(df::DataFrame, years::Vector{Int64}, ages::Vector{Int64})
     filter(row -> in(row.Year, years) && in(row.Age, ages), df)

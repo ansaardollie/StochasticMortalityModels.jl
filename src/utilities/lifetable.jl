@@ -8,6 +8,8 @@ function expected_lifetime(
     radix=1_000_000,
     debug=false)
 
+    Δx = ages[2:end] - ages[1:end-1]
+    single_ages = all(Δx .== 1)
 
     function a0(m0, sex::Sex, mode::CalculationChoice)
         config = a0_config(mode, sex)
@@ -27,7 +29,7 @@ function expected_lifetime(
 
     n = length(mx)
 
-    ax = Vector{Any}(fill(0.5, n))
+    ax = single_ages ? Vector{Any}(fill(0.5, n)) : [0, (0.5 * Δx)...]
 
     if ages[1] == 0
         m0 = mx[1]
@@ -36,14 +38,21 @@ function expected_lifetime(
     end
 
 
-    if ages[n] == 110
+    if ages[n] == 110 || !single_ages
         aend = 1 / mx[n]
         ax[n] = aend
     end
 
-    qx = mx ./ (1 .+ (1 .- ax) .* mx)
+    if single_ages
+        qx = mx ./ (1 .+ (1 .- ax) .* mx)
+    else
+        mx′ = mx[1:end-1]
+        ax′ = ax[1:end-1]
+        qx = (Δx .* mx′) ./ (1 .+ (Δx .- ax′) .* mx′)
+        qx = [qx..., 1]
+    end
 
-    if ages[n] == 110
+    if ages[n] == 110 || !single_ages
         qx[n] = 1
     end
 
@@ -52,8 +61,17 @@ function expected_lifetime(
     lx = cumprod(cat([1], px[1:end-1], dims=1)) .* radix
     dx = lx .* qx
 
-    Lx = lx .- (1 .- ax) .* dx
-    Tx = reverse(cumsum(reverse(Lx)))
+    if single_ages
+        Lx = lx .- (1 .- ax) .* dx
+        Tx = reverse(cumsum(reverse(Lx)))
+    else
+        lx′ = lx[1:end-1]
+        dx′ = dx[1:end-1]
+        ax′ = ax[1:end-1]
+        Lx = Δx .* (lx′ .- dx′) .+ ax′ .* dx′
+        Lx = [Lx..., lx[end] / mx[end]]
+        Tx = reverse(cumsum(reverse(Lx)))
+    end
 
     ex = Tx ./ lx
 

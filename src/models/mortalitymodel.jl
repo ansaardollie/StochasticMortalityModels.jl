@@ -99,6 +99,7 @@ function MortalityModel(
     country::AbstractString,
     sex::Sex;
     remove_missing::Bool=true,
+    age_groups::Optional{Vector{Int}}=nothing,
     train_years::Optional{AbstractVector{Int}}=nothing,
     train_ages::Optional{AbstractVector{Int}}=nothing,
     test_years::Optional{AbstractVector{Int}}=nothing,
@@ -166,9 +167,9 @@ function MortalityModel(
 
 
 
-    all_ayr = ageyear(all_years, all_ages)
-    fit_ayr = ageyear(fit_years, fit_ages)
-    test_ayr = ageyear(test_years, test_ages)
+    all_ayr = ageyear(all_years, isnothing(age_groups) ? all_ages : age_groups)
+    fit_ayr = ageyear(fit_years, isnothing(age_groups) ? fit_ages : age_groups)
+    test_ayr = ageyear(test_years, isnothing(age_groups) ? test_ages : age_groups)
 
     modeldims = Stratified{AgeYearRange}(
         all_ayr,
@@ -178,6 +179,10 @@ function MortalityModel(
     )
 
     df = DataFrames.subset(df, :Year => ByRow(y -> y in all_years))
+
+    if !(isnothing(age_groups))
+        df = combine_age_groups(df, age_groups)
+    end
 
     @reset variant.calculation = calculation_mode
     return MortalityModel(;

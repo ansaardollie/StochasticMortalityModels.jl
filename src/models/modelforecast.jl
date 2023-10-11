@@ -62,7 +62,7 @@ function forecast(
     rw_var_est = sum((difs .- drift_est) .^ 2) / (length(difs) - 1)
 
     horizon_agerange = Ages(model, DS_TEST) #model.ranges.test.ages
-    ages = horizon_agerange.values
+    fn_ages = horizon_agerange.values
     horizon_yearrange = Years(model, DS_TEST)#model.ranges.test.years
     horizon = horizon_yearrange.values
 
@@ -122,9 +122,9 @@ function forecast(
     @reset mxt_fub.label = "Forecasted $(round(confidence_level*100,digits=0))% LB $rl"
 
     cm = calculation(model)
-    le_fc_dm = lexpectancies(mxt_fc.values, ages, horizon, gender=model.population.sex, at_age=ages, mode=cm)
-    le_flb_dm = lexpectancies(mxt_fub.values, ages, horizon, gender=model.population.sex, at_age=ages, mode=cm)
-    le_fub_dm = lexpectancies(mxt_flb.values, ages, horizon, gender=model.population.sex, at_age=ages, mode=cm)
+    le_fc_dm = lexpectancies(mxt_fc.values, fn_ages, horizon, gender=model.population.sex, at_age=fn_ages, mode=cm)
+    le_flb_dm = lexpectancies(mxt_fub.values, fn_ages, horizon, gender=model.population.sex, at_age=fn_ages, mode=cm)
+    le_fub_dm = lexpectancies(mxt_flb.values, fn_ages, horizon, gender=model.population.sex, at_age=fn_ages, mode=cm)
 
     ext = exposures(model, DS_TEST)
     dxt_fc_dm = ext .* mxt_fc.values

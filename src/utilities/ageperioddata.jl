@@ -77,13 +77,13 @@ end
 
 
 
-function periods(atd::AgePeriodData{T}) where {T<:Real}
-    return atd.periods
-end
+# function periods(atd::AgePeriodData{T}) where {T<:Real}
+#     return atd.periods
+# end
 
-function ages(atd::AgePeriodData{T}) where {T<:Real}
-    return atd.ages
-end
+# function ages(atd::AgePeriodData{T}) where {T<:Real}
+#     return atd.ages
+# end
 
 
 
